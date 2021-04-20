@@ -30,7 +30,7 @@ function simulateTestGame()
 function simulateGames()
 {
     var before = Date.now();
-    var simulatingGames = 5000000;
+    var simulatingGames = 100000;
 
     var turn2 = 0;
     var turn3 = 0;
@@ -536,7 +536,7 @@ function returnCoreDecklist()
     deck.push("Dromar's Cavern");
 
 
-    var lands = 21;
+    var lands = 20;
     var sideboardCyclers = 0;
     var misdirections = 0;
     var creatures = 60 - deck.length - sideboardCyclers - misdirections - lands;
