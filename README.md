@@ -21,7 +21,7 @@ We tried a Restless Dreams setup that could make you cycle away your Fluctuators
 Notice that all sideboard cards are cyclers aswell. Having non-cycling cards in your deck is a debt in your combo turn and will cost you an average of 0.8 turn for the first card!
 Whilst we thought about cards like Misdirection in the sideboard, adding in the playlist will put our average turn on about turn 7; which was unacceptable.
 
-Whilst all the sideboard cards being cycling cards, they still cost you 'something'. Every non-creature cycler will cost you about 0.04 turns, and this number grows exponentially.
+Whilst all the sideboard cards being cycling cards, they still cost you 'something'. Every non-creature cycler will cost you about 0.04 turns, and this number grows exponentially. Adding 7 sideboard cards (which is the max in the current setup, you cannot go below 21 creatures), will cost you about 0.5 turns.
 If needed, cutting some mainboard creatures for mainboard sideboard options to broaden your package is optional, but not free.
 
 ## Lands
