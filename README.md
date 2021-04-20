@@ -1,4 +1,4 @@
-# Let's simulate the tour de France! 
+# Let's simulate le Tour de France! 
 
 This very [bodged](https://www.youtube.com/watch?v=lIFE7h3m40U) simulator simulates Fluctuator in pre-modern. The decklist is tweakable and the ideal decklist will perform on an average turn 4 kill.
 
