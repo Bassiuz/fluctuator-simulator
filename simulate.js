@@ -93,7 +93,7 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
     var playMade = false;
     var gameLogging = false;
 
-    if (countCardInList(graveyard, "Cycling Card") > 19 && hand.includes("Lotus Petal") && hand.includes("Songs of the Damned") && hand.includes("Haunting Misery"))
+    if (countCardInList(graveyard, "Cycling Card") > 19 && (hand.includes("Lotus Petal") || extraManaThisTurn == 1) && hand.includes("Songs of the Damned") && hand.includes("Haunting Misery"))
     {
         // we win, give turn we won on.
         return resultObject;
