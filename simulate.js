@@ -521,6 +521,11 @@ function getRandomCardFrom(list)
 
 function returnCoreDecklist()
 {
+    return returnDecklist(20, 0, 0)
+}
+
+function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards)
+{
     var deck = [];
     deck.push("Lotus Petal");
     deck.push("Songs of the Damned");
@@ -536,13 +541,10 @@ function returnCoreDecklist()
     deck.push("Dromar's Cavern");
 
 
-    var lands = 20;
-    var sideboardCyclers = 0;
-    var misdirections = 0;
-    var creatures = 60 - deck.length - sideboardCyclers - misdirections - lands;
+    var creatures = 60 - deck.length - sideboardCyclers - sideboardCards - tappedCyclingLands;
 
 
-    for (i = 0; i < lands; i++) {
+    for (i = 0; i < tappedCyclingLands; i++) {
         deck.push("Cycling Land");
     } 
 
@@ -554,7 +556,7 @@ function returnCoreDecklist()
         deck.push("Cycling Card - Sideboard Card");
     } 
 
-    for (i = 0; i < misdirections; i++) {
+    for (i = 0; i < sideboardCards; i++) {
         deck.push("Misdirection");
     } 
 

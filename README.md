@@ -5,12 +5,12 @@ This very [bodged](https://www.youtube.com/watch?v=lIFE7h3m40U) simulator simula
 To run the simulation, check out the repository or donwnload the simulate.js file and run `node simulate.js`. The decklist on the bottom of the code is configurable to test different deck configurations.
 
 ```
-Results after simulating 5000000 games
+Results after simulating 10000000 games
 *****************************
-Average Combo Turn: 4.089908793732384
-Bricked Game Percentage: 4.9846
-Average Starging Hand Size 6.2086038
-Turn 2: 315964 Turn 3: 1882919 Turn 4: 1053065 Turn 5: 863879 Turn 6: 273561 Turn 7: 121978 Turn 8: 96337 Turn 9: 78702 Turn 10: 64365 Brick: 2492307
+Average Combo Turn: 4.042703553654869
+Bricked Game Percentage: 4.98402
+Average Starging Hand Size 6.2089191
+Turn 2: 674091 Turn 3: 4021596 Turn 4: 1916249 Turn 5: 1620743 Turn 6: 546059 Turn 7: 243927 Turn 8: 192961 Turn 9: 156788 Turn 10: 129184 Brick: 498402
 ```
 
 And this simulation resulted in this decklist:
@@ -50,7 +50,7 @@ Whilst we thought about cards like Misdirection and Orim's Chant in the sideboar
 Whilst all the sideboard cards being cycling cards, they still cost you 'something'. Every non-creature cycler will cost you about 0.04 turns, and this number grows exponentially. Adding 7 sideboard cards (which is the max in the current setup, you cannot go below 21 creatures), will cost you about 0.5 turns.
 If needed, cutting some mainboard creatures for mainboard sideboard options to broaden your package is optional, but not free.
 
-## Other side strategies options
+## Other considered options
 ### Songs of the Damned vs Dark Ritual
 Late in the simulation we figured that using Dark Ritual instead of Songs of the Damned gave our opponent the opportunity to use Tormod's Crypt too late. Songs of the Damned screams "crack the crypt now!" whilst Dark Ritual doesn't. After Dark Ritual resolves, your opponent does not have time to respond to the Haunting Misery anymore with the Tormod's Crypt.
 ### Restless Dreams
@@ -65,4 +65,4 @@ Some Fluctuator lists play Drain Life, but this seems worse. You always need 2 m
 ### Enlightened Tutor
 Enlightened Tutor can make you find your fluctuator faster, however this has some problems:
 - You only have 5 white sources, which is not really enough to consistenlty cast it.
-- As said before, every non-cycling card you put in your deck costs you an average of 0.8 turns. The consistency you gain by adding a Enlightened Tutor will not weigh up agaisnt the slow down you get in your combo turns.
+- As said before, every non-cycling card you put in your deck costs you an average of 0.8 turns. The consistency you gain by adding a Enlightened Tutor will not weigh up against the slow down you get in your combo turns.
