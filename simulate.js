@@ -1,5 +1,5 @@
 
-console.log(simulateGames());
+console.log(compareDecklists());
 
 function simulateTestGame()
 {
@@ -26,8 +26,29 @@ function simulateTestGame()
     }
 }
 
+function compareDecklists()
+{    
+    console.log("Simulating the core decklist");
+    var averageTurnCoreDecklist = simulateGames(returnCoreDecklist);
+    console.log("Simulating the provided variation");
+    var averageTurnComparedDecklist = simulateGames(returnCompareDecklist);
 
-function simulateGames()
+    console.log("Comparing the provided variation against the best list will cost you an average turn of: ")
+    console.log(averageTurnComparedDecklist - averageTurnCoreDecklist);
+}
+
+function returnCoreDecklist()
+{
+    return returnDecklist(20, 0, 0)
+}
+
+function returnCompareDecklist()
+{
+    return returnDecklist(20, 0, 1)
+}
+
+
+function simulateGames(returnCoreDecklist)
 {
     var before = Date.now();
     var simulatingGames = 100000;
@@ -49,7 +70,7 @@ function simulateGames()
 
     for (var amountOfGames = 0; amountOfGames < simulatingGames; amountOfGames++) {
         onThePlay = !onThePlay;
-        var gameResult = simulateGame(onThePlay);
+        var gameResult = simulateGame(onThePlay, returnCoreDecklist);
         var mulligan = gameResult.mulligan;
         var turn = gameResult.turn;
         turn == 2 ? turn2 = turn2 + 1 : '';
@@ -79,13 +100,15 @@ function simulateGames()
     console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
     console.log("Average Starging Hand Size " + averageHandsize);
     console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
-    console.log("Finished in " + (after - before) + " milliseconds");
+    //console.log("Finished in " + (after - before) + " milliseconds");
+
+    return averageComboTurn;
 }
 
 
-function simulateGame(onThePlay = false)
+function simulateGame(onThePlay = false, returnDecklistFunction)
 {
-    return mulligan(7, onThePlay);
+    return mulligan(7, onThePlay, returnDecklistFunction);
 }
 
 function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extraManaThisTurn = 0, resultObject = {turn: 1, mulligan: hand.length})
@@ -458,9 +481,9 @@ function isHandPlayable(hand, onTheDraw = false)
     
 }
 
-function mulligan(size, onTheDraw = false)
+function mulligan(size, onTheDraw = false, returnDecklistFunction)
 {
-    var deck = returnCoreDecklist();
+    var deck = returnDecklistFunction();
 
     var hand = [];
     var graveyard = [];
@@ -482,7 +505,7 @@ function mulligan(size, onTheDraw = false)
     }
     else
     {
-        return mulligan(size - 1);
+        return mulligan(size - 1, onTheDraw, returnDecklistFunction);
     }
 }
 
@@ -517,11 +540,6 @@ function putCardFromHandOnBottomOfDeck(card, hand, deck)
 function getRandomCardFrom(list)
 {
     return list[Math.floor(Math.random() * list.length)];
-}
-
-function returnCoreDecklist()
-{
-    return returnDecklist(20, 0, 0)
 }
 
 function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards)
