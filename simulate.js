@@ -6,9 +6,7 @@ function simulateTestGame()
     var deck = returnCoreDecklist();
 
 
-    var hand = [];
-    var graveyard = [];
-    var battlefield = []
+    var gameState = getGameStateObject();
 
     moveCardFromTo("Untapped Cycling Land", deck, hand);
     moveCardFromTo("Dromar's Cavern", deck, hand);
@@ -18,11 +16,9 @@ function simulateTestGame()
     moveCardFromTo("Cycling Card", deck, hand);
     moveCardFromTo("Cycling Card", deck, hand);
 
-
-
     if (isHandPlayable(hand))
     {
-        return makePlay(deck, hand, graveyard, battlefield, false);
+        return makePlay(gameState, false);
     }
 }
 
@@ -44,7 +40,7 @@ function returnCoreDecklist()
 
 function returnCompareDecklist()
 {
-    return returnDecklist(20, 0, 1)
+    return returnDecklist(21, 0, 0)
 }
 
 
@@ -111,93 +107,94 @@ function simulateGame(onThePlay = false, returnDecklistFunction)
     return mulligan(7, onThePlay, returnDecklistFunction);
 }
 
-function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extraManaThisTurn = 0, resultObject = {turn: 1, mulligan: hand.length})
+function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultObject = {turn: 1, mulligan: gameState.hand.length})
 {
+    
     var playMade = false;
     var gameLogging = false;
 
-    if (countCardInList(graveyard, "Cycling Card") > 19 && (hand.includes("Lotus Petal") || extraManaThisTurn == 1) && hand.includes("Songs of the Damned") && hand.includes("Haunting Misery"))
+    if (countCardInList(gameState.graveyard, "Cycling Card") > 19 && (gameState.hand.includes("Lotus Petal") || extraManaThisTurn == 1) && gameState.hand.includes("Songs of the Damned") && gameState.hand.includes("Haunting Misery"))
     {
         // we win, give turn we won on.
         return resultObject;
     }
 
-    if (countCardInList(battlefield, "Fluctuator") > 0)
+    if (countCardInList(gameState.battlefield, "Fluctuator") > 0)
         {
             // cycle a card
-            if (hand.includes("Cycling Card"))
+            if (gameState.hand.includes("Cycling Card"))
             {            
                 if (!playMade) {
                     if (gameLogging){
                         console.log("cycle a cycling card");
                     }
-                    moveCardFromTo("Cycling Card", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Card", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck, gameState.hand);
                     playMade = true;
                 }
             }
 
-            if (hand.includes("Cycling Card - Sideboard Card"))
+            if (gameState.hand.includes("Cycling Card - Sideboard Card"))
             {            
                 if (!playMade) {
                     if (gameLogging){
                         console.log("cycle a cycling card");
                     }
-                    moveCardFromTo("Cycling Card - Sideboard Card", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Card - Sideboard Card", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck, gameState.hand);
                     playMade = true;
                 }
             }
             // cycle a card
-            if (hand.includes("Cycling Land"))
+            if (gameState.hand.includes("Cycling Land"))
             {            
                 if (!playMade) {
                     if (gameLogging){
                     console.log("cycle a cycling land");
                     }
-                    moveCardFromTo("Cycling Land", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Land", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck, gameState.hand);
                     playMade = true;
                 }
             }
             // cycle a card
-            if (hand.includes("Untapped Cycling Land"))
+            if (gameState.hand.includes("Untapped Cycling Land"))
             {            
                 if (!playMade) {
                     if (gameLogging){
                     console.log("cycle a untapped cycling land");
                     }
-                    moveCardFromTo("Untapped Cycling Land", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Untapped Cycling Land", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
                     playMade = true;
                 }
             }
             // play restless dreams, you don't have anything to cycle anymore
-            if (hand.includes("Lotus Petal") && hand.includes("Restless Dreams") && countCardInList(graveyard, "Cycling Card") > 2)
+            if (gameState.hand.includes("Lotus Petal") && gameState.hand.includes("Restless Dreams") && countCardInList(gameState.graveyard, "Cycling Card") > 2)
             {            
                 if (!playMade) {
                     if (gameLogging){
                         console.log("playing Restless Dreams");
                     }
-                    moveCardFromTo("Lotus Petal", hand, graveyard);
-                    moveCardFromTo("Restless Dreams", hand, graveyard);
+                    moveCardFromTo("Lotus Petal", gameState.hand, gameState.graveyard);
+                    moveCardFromTo("Restless Dreams", gameState.hand, gameState.graveyard);
                     
-                    while(hand.includes("Fluctuator") && graveyard.includes("Cycling Card"))
+                    while(gameState.hand.includes("Fluctuator") && gameState.graveyard.includes("Cycling Card"))
                     {
-                        moveCardFromTo("Fluctuator", hand, graveyard);
-                        moveCardFromTo("Cycling Card", graveyard, hand);
+                        moveCardFromTo("Fluctuator", gameState.hand, gameState.graveyard);
+                        moveCardFromTo("Cycling Card", gameState.graveyard, gameState.hand);
                         extraManaThisTurn = 0;
                     }
 
-                    drawACard(deck,hand);
+                    drawACard(gameState.deck, gameState.hand);
                     playMade = true;
                 }
             }
         }
 
-    if (countCardInList(battlefield, "Fluctuator") == 0 && (countCardInList(battlefield, "Cycling Land") + countCardInList(battlefield, "Untapped Cycling Land") + countCardInList(battlefield, "Dromar's Cavern") + extraManaThisTurn) == 2)
+    if (countCardInList(gameState.battlefield, "Fluctuator") == 0 && (countCardInList(gameState.battlefield, "Cycling Land") + countCardInList(gameState.battlefield, "Untapped Cycling Land") + countCardInList(gameState.battlefield, "Dromar's Cavern") + extraManaThisTurn) == 2)
     {
-        if (countCardInList(hand, "Fluctuator") > 0)
+        if (countCardInList(gameState.hand, "Fluctuator") > 0)
         {
             // play fluctuator
             if (!playMade)
@@ -205,69 +202,68 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
                 if (gameLogging){
                 console.log("play Fluctuator");
                 }
-                moveCardFromTo("Fluctuator", hand, battlefield);
+                moveCardFromTo("Fluctuator", gameState.hand, gameState.battlefield);
                 playMade = true;
             }
         }
         else {
             // cycle a card
             cardCycled = false;
-            if (hand.includes("Cycling Card"))
+            if (gameState.hand.includes("Cycling Card"))
             {            
                 if (!playMade) {
                     if (gameLogging){
         
                     console.log("cycle a cycling card");
                     }
-                    moveCardFromTo("Cycling Card", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Card", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
                     extraManaThisTurn = 0;
                     cardCycled = true;
                 }
             }
 
-            if (hand.includes("Cycling Card - Sideboard Card"))
+            if (gameState.hand.includes("Cycling Card - Sideboard Card"))
             {            
                 if (!playMade) {
                     if (gameLogging){
-        
-                    console.log("cycle a cycling card");
+                        console.log("cycle a cycling card");
                     }
-                    moveCardFromTo("Cycling Card - Sideboard Card", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Card - Sideboard Card", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
                     extraManaThisTurn = 0;
                     cardCycled = true;
                 }
             }
 
             // cycle a card
-            if (hand.includes("Cycling Land"))
+            if (gameState.hand.includes("Cycling Land"))
             {            
                 if (!playMade && !cardCycled) {
                     if (gameLogging){
-                    console.log("cycle a cycling land");
+                        console.log("cycle a cycling land");
                     }
-                    moveCardFromTo("Cycling Land", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Cycling Land", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
                     extraManaThisTurn = 0;
                     cardCycled = true;
                 }
             }
             // cycle a card
-            if (hand.includes("Untapped Cycling Land"))
+            if (gameState.hand.includes("Untapped Cycling Land"))
             {            
                 if (!playMade && !cardCycled) {
                     if (gameLogging){
                     console.log("cycle a cycling land");
                     }
-                    moveCardFromTo("Untapped Cycling Land", hand, graveyard);
-                    drawACard(deck,hand);
+                    moveCardFromTo("Untapped Cycling Land", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
                 }
             }
             
         }
     }
-    else if (hand.includes("Untapped Cycling Land"))
+    else if (gameState.hand.includes("Untapped Cycling Land"))
     {
         // play land
         if (!playMade && !playedALand)
@@ -276,12 +272,12 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
             if (gameLogging){
                 console.log("play a untapped land");
             }
-            moveCardFromTo("Untapped Cycling Land", hand, battlefield);
+            moveCardFromTo("Untapped Cycling Land", gameState.hand, gameState.battlefield);
             playedALand = true;
             playMade = true;
         }
     }
-    else if (hand.includes("Dromar's Cavern") && (battlefield.includes("Cycling Land") || battlefield.includes("Untapped Cycling Land")))
+    else if (gameState.hand.includes("Dromar's Cavern") && (gameState.battlefield.includes("Cycling Land") || gameState.battlefield.includes("Untapped Cycling Land")))
     {
         // play land
         if (!playMade && !playedALand)
@@ -290,21 +286,21 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
             if (gameLogging){
                 console.log("play a Dromar's Cavern land");
             }
-            moveCardFromTo("Dromar's Cavern", hand, battlefield);
-            if(battlefield.includes("Untapped Cycling Land"))
+            moveCardFromTo("Dromar's Cavern", gameState.hand, gameState.battlefield);
+            if(gameState.battlefield.includes("Untapped Cycling Land"))
             {
-                moveCardFromTo("Untapped Cycling Land", battlefield, hand);
+                moveCardFromTo("Untapped Cycling Land", gameState.battlefield, gameState.hand);
             }
             else
             {
-                moveCardFromTo("Cycling Land", battlefield, hand);
+                moveCardFromTo("Cycling Land", gameState.battlefield, gameState.hand);
             }
             playedALand = true;
             playMade = true;
             extraManaThisTurn = 1;
         }
     }
-    else if (hand.includes("Cycling Land"))
+    else if (gameState.hand.includes("Cycling Land"))
     {
         // play land
         if (!playMade && !playedALand)
@@ -315,7 +311,7 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
             console.log("play a land");
             }
             playedALand = true;
-            moveCardFromTo("Cycling Land", hand, battlefield);
+            moveCardFromTo("Cycling Land", gameState.hand, gameState.battlefield);
         }
     }
 
@@ -329,7 +325,7 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
         playedALand = false;
         extraManaThisTurn = 0;
         resultObject.turn = resultObject.turn + 1;
-        drawACard(deck,hand);
+        drawACard(gameState.deck, gameState.hand);
     }
 
     if (resultObject.turn > 10)
@@ -338,7 +334,7 @@ function makePlay(deck, hand, graveyard, battlefield, playedALand = false, extra
         return resultObject;
     }
 
-    return makePlay(deck, hand, graveyard, battlefield, playedALand, extraManaThisTurn, resultObject);
+    return makePlay(gameState, playedALand, extraManaThisTurn, resultObject);
 }
 
 function londonMulliganHand(hand, deck, handsize)
@@ -483,25 +479,22 @@ function isHandPlayable(hand, onTheDraw = false)
 
 function mulligan(size, onTheDraw = false, returnDecklistFunction)
 {
-    var deck = returnDecklistFunction();
-
-    var hand = [];
-    var graveyard = [];
-    var battlefield = []
+    var gameState = getGameStateObject();
+    gameState.deck = returnDecklistFunction();
 
     for (i = 0; i < 7; i++) {
-        drawACard(deck,hand);
+        drawACard(gameState.deck, gameState.hand);
     }
 
-    londonMulliganHand(hand, deck, size);
+    londonMulliganHand(gameState.hand, gameState.deck, size);
 
-    if (isHandPlayable(hand, size, onTheDraw))
+    if (isHandPlayable(gameState.hand, size, onTheDraw))
     {
         if(onTheDraw)
         {
-            drawACard(deck, hand);
+            drawACard(gameState.deck, gameState.hand);
         }
-        return makePlay(deck, hand, graveyard, battlefield, false);
+        return makePlay(gameState, false);
     }
     else
     {
@@ -598,4 +591,14 @@ function shuffle(array) {
     }
   
     return array;
-  }
+}
+
+function getGameStateObject()
+{
+    return {
+        deck: [],
+        hand: [],
+        battlefield: [],
+        graveyard: []
+    }
+}
