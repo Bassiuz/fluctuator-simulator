@@ -47,7 +47,7 @@ function returnCompareDecklist()
 function simulateGames(returnCoreDecklist)
 {
     var before = Date.now();
-    var simulatingGames = 100000;
+    var simulatingGames = 10000000;
 
     var turn2 = 0;
     var turn3 = 0;

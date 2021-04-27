@@ -7,10 +7,10 @@ To run the simulation, check out the repository or donwnload the simulate.js fil
 ```
 Results after simulating 10000000 games
 *****************************
-Average Combo Turn: 4.042703553654869
-Bricked Game Percentage: 4.98402
-Average Starging Hand Size 6.2089191
-Turn 2: 674091 Turn 3: 4021596 Turn 4: 1916249 Turn 5: 1620743 Turn 6: 546059 Turn 7: 243927 Turn 8: 192961 Turn 9: 156788 Turn 10: 129184 Brick: 498402
+Average Combo Turn: 3.8391801358361657
+Bricked Game Percentage: 4.68665
+Average Starging Hand Size 6.5151949
+Turn 2: 801300 Turn 3: 4731388 Turn 4: 1814370 Turn 5: 1094256 Turn 6: 409012 Turn 7: 228163 Turn 8: 182142 Turn 9: 148401 Turn 10: 122303 Brick: 468665
 ```
 
 And this simulation resulted in this decklist:
