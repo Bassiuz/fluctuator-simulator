@@ -1,5 +1,5 @@
 
-console.log(compareDecklists());
+console.log(simulateAllLists());
 
 function simulateTestGame()
 {
@@ -27,26 +27,117 @@ function compareDecklists()
     console.log("Simulating the core decklist");
     var averageTurnCoreDecklist = simulateGames(returnCoreDecklist);
     console.log("Simulating the provided variation");
-    var averageTurnComparedDecklist = simulateGames(returnCompareDecklist);
+    var averageTurnComparedDecklist = simulateGames(returnOriginalDecklist);
 
     console.log("Comparing the provided variation against the best list will cost you an average turn of: ")
     console.log(averageTurnComparedDecklist - averageTurnCoreDecklist);
 }
 
+
+
+
+function simulateAllLists()
+{
+    var sideboardcards = 1;
+    var lands = 20;
+
+    console.log("Core Decklist");
+    simulateGames(returnCoreDecklist);
+    console.log("Original Decklist");
+
+    simulateGames(returnOriginalDecklist);
+    console.log("Removed Extra Kill Card Decklist");
+
+    simulateGames(returnRemovedExtraKillCard);
+    console.log("Upped Land Count Decklist");
+
+    simulateGames(returnUppedLandCount);
+
+    console.log("Removed Sideboard Card Decklist");
+
+    simulateGames(returnRemovedSideboardCard);
+
+    console.log("Added 1 Brick Decklist");
+
+    simulateGames(returnAdded1Brick);
+
+    console.log("Added 3 Brick Decklist");
+
+    simulateGames(returnAdded3Bricks);
+
+    console.log("Fully Boarded Original Decklist Decklist");
+
+    simulateGames(returnFullyBoardedOriginalDeck);
+    
+
+    while (sideboardcards < 15)
+    {
+        console.log(lands + ", " + sideboardcards + ", 0, 1");
+        var boardOutLand = simulateGames(returnBoardOutLand);
+        var boardOutCreature = simulateGames(returnBoardOutCreature);
+        if (boardOutLand < boardOutCreature)
+        {
+            lands = lands - 1;
+            console.log("board out a land instead");
+        }
+        sideboardcards = sideboardcards + 1;
+    }
+
+    function returnBoardOutLand()
+    {
+        return returnDecklist(lands - 1, sideboardcards, 0, 1)
+    }
+
+    function returnBoardOutCreature()
+    {
+        return returnDecklist(lands, sideboardcards, 0, 1)
+    }
+}
+
 function returnCoreDecklist()
 {
-    return returnDecklist(20, 0, 0)
+    return returnDecklist(20, 0, 0, 1)
 }
 
-function returnCompareDecklist()
+function returnOriginalDecklist()
 {
-    return returnDecklist(21, 0, 0)
+    return returnDecklist(15, 1, 0, 2)
 }
 
+function returnRemovedExtraKillCard()
+{
+    return returnDecklist(15, 1, 0, 1)
+}
+
+function returnUppedLandCount()
+{
+    return returnDecklist(20, 1, 0, 1)
+}
+
+function returnRemovedSideboardCard()
+{
+    return returnDecklist(20, 1, 0, 1)
+}
+
+function returnAdded1Brick()
+{
+    return returnDecklist(20, 0, 1, 1)
+}
+
+function returnAdded3Bricks()
+{
+    return returnDecklist(20, 0, 3, 1)
+}
+
+function returnFullyBoardedOriginalDeck()
+{
+    return returnDecklist(15, 1, 3, 2)
+}
 
 function simulateGames(returnCoreDecklist)
 {
     var before = Date.now();
+    
     var simulatingGames = 10000000;
 
     var turn2 = 0;
@@ -90,12 +181,12 @@ function simulateGames(returnCoreDecklist)
     var averageComboTurn = totalScore / (simulatingGames - brick);
 
     var averageHandsize = totalHandsize / (simulatingGames);
-    console.log("Results after simulating " + simulatingGames + " games");
-    console.log("*****************************")
+    ///console.log("Results after simulating " + simulatingGames + " games");
+    ///console.log("*****************************")
     console.log("Average Combo Turn: " + averageComboTurn);
-    console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
-    console.log("Average Starging Hand Size " + averageHandsize);
-    console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
+    ///console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
+    ///console.log("Average Starting Hand Size " + averageHandsize);
+    ///console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
     //console.log("Finished in " + (after - before) + " milliseconds");
 
     return averageComboTurn;
@@ -535,24 +626,28 @@ function getRandomCardFrom(list)
     return list[Math.floor(Math.random() * list.length)];
 }
 
-function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards)
+function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, killconditions = 1)
 {
     var deck = [];
     deck.push("Lotus Petal");
+    deck.push("Fluctuator");
+    deck.push("Fluctuator");
+    deck.push("Fluctuator");
+    deck.push("Fluctuator");
     deck.push("Songs of the Damned");
-    deck.push("Fluctuator");
-    deck.push("Fluctuator");
-    deck.push("Fluctuator");
-    deck.push("Fluctuator");
-    deck.push("Haunting Misery");
     deck.push("Untapped Cycling Land");
     deck.push("Untapped Cycling Land");
     deck.push("Untapped Cycling Land");
     deck.push("Untapped Cycling Land");
     deck.push("Dromar's Cavern");
 
+    for (i = 0; i < killconditions; i++) {
+        deck.push("Haunting Misery");
+    } 
+
 
     var creatures = 60 - deck.length - sideboardCyclers - sideboardCards - tappedCyclingLands;
+
 
 
     for (i = 0; i < tappedCyclingLands; i++) {
