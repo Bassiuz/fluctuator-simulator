@@ -1,22 +1,21 @@
 
-console.log(simulateAllLists());
+console.log(simulateGames(returnGreenDecklist));
 
 function simulateTestGame()
 {
-    var deck = returnCoreDecklist();
-
-
     var gameState = getGameStateObject();
+    gameState.deck = returnGreenDecklist();
 
-    moveCardFromTo("Untapped Cycling Land", deck, hand);
-    moveCardFromTo("Dromar's Cavern", deck, hand);
-    moveCardFromTo("Fluctuator", deck, hand);
-    moveCardFromTo("Cycling Card", deck, hand);
-    moveCardFromTo("Cycling Card", deck, hand);
-    moveCardFromTo("Cycling Card", deck, hand);
-    moveCardFromTo("Cycling Card", deck, hand);
 
-    if (isHandPlayable(hand))
+    moveCardFromTo("Untapped Cycling Land", gameState.deck, gameState.hand);
+    moveCardFromTo("Dromar's Cavern", gameState.deck, gameState.hand);
+    moveCardFromTo("Fluctuator",gameState. deck, gameState.hand);
+    moveCardFromTo("Cycling Card", gameState.deck, gameState.hand);
+    moveCardFromTo("Cycling Card", gameState.deck, gameState.hand);
+    moveCardFromTo("Cycling Card", gameState.deck, gameState.hand);
+    moveCardFromTo("Cycling Card", gameState.deck, gameState.hand);
+
+    if (isHandPlayable(gameState.hand))
     {
         return makePlay(gameState, false);
     }
@@ -34,47 +33,46 @@ function compareDecklists()
 }
 
 
-
-
 function simulateAllLists()
 {
     var sideboardcards = 1;
     var lands = 20;
 
     console.log("Core Decklist");
-    simulateGames(returnCoreDecklist);
-    console.log("Original Decklist");
+    simulateGames(() => returnDecklist(20, 0, 4, 1));
 
-    simulateGames(returnOriginalDecklist);
+    console.log("Original Decklist");
+    simulateGames(() => returnDecklist(15, 1, 0, 2));
+
     console.log("Removed Extra Kill Card Decklist");
 
-    simulateGames(returnRemovedExtraKillCard);
+    simulateGames(() => returnDecklist(15, 1, 0, 1));
     console.log("Upped Land Count Decklist");
 
-    simulateGames(returnUppedLandCount);
+    simulateGames(() => returnDecklist(20, 1, 0, 1));
 
     console.log("Removed Sideboard Card Decklist");
 
-    simulateGames(returnRemovedSideboardCard);
+    simulateGames(() => returnDecklist(20, 0, 0, 1));
 
     console.log("Added 1 Brick Decklist");
 
-    simulateGames(returnAdded1Brick);
+    simulateGames(() => returnDecklist(20, 0, 1, 1));
 
     console.log("Added 3 Brick Decklist");
 
-    simulateGames(returnAdded3Bricks);
+    simulateGames(() => returnDecklist(20, 0, 3, 1));
 
     console.log("Fully Boarded Original Decklist Decklist");
 
-    simulateGames(returnFullyBoardedOriginalDeck);
+    simulateGames(() => returnDecklist(15, 1, 3, 2));
     
 
     while (sideboardcards < 15)
     {
         console.log(lands + ", " + sideboardcards + ", 0, 1");
-        var boardOutLand = simulateGames(returnBoardOutLand);
-        var boardOutCreature = simulateGames(returnBoardOutCreature);
+        var boardOutLand = simulateGames(() => returnDecklist(lands - 1, sideboardcards, 0, 1));
+        var boardOutCreature = simulateGames(() => returnDecklist(lands, sideboardcards, 0, 1));
         if (boardOutLand < boardOutCreature)
         {
             lands = lands - 1;
@@ -82,21 +80,16 @@ function simulateAllLists()
         }
         sideboardcards = sideboardcards + 1;
     }
-
-    function returnBoardOutLand()
-    {
-        return returnDecklist(lands - 1, sideboardcards, 0, 1)
-    }
-
-    function returnBoardOutCreature()
-    {
-        return returnDecklist(lands, sideboardcards, 0, 1)
-    }
 }
 
 function returnCoreDecklist()
 {
-    return returnDecklist(20, 0, 0, 1)
+    return returnDecklist(20, 0, 0, 1, 0, 0)
+}
+
+function returnGreenDecklist()
+{
+    return returnDecklist(15, 0, 0, 1, 6, 20)
 }
 
 function returnOriginalDecklist()
@@ -104,41 +97,11 @@ function returnOriginalDecklist()
     return returnDecklist(15, 1, 0, 2)
 }
 
-function returnRemovedExtraKillCard()
-{
-    return returnDecklist(15, 1, 0, 1)
-}
-
-function returnUppedLandCount()
-{
-    return returnDecklist(20, 1, 0, 1)
-}
-
-function returnRemovedSideboardCard()
-{
-    return returnDecklist(20, 1, 0, 1)
-}
-
-function returnAdded1Brick()
-{
-    return returnDecklist(20, 0, 1, 1)
-}
-
-function returnAdded3Bricks()
-{
-    return returnDecklist(20, 0, 3, 1)
-}
-
-function returnFullyBoardedOriginalDeck()
-{
-    return returnDecklist(15, 1, 3, 2)
-}
-
 function simulateGames(returnCoreDecklist)
 {
     var before = Date.now();
     
-    var simulatingGames = 10000000;
+    var simulatingGames = 1;
 
     var turn2 = 0;
     var turn3 = 0;
@@ -181,13 +144,13 @@ function simulateGames(returnCoreDecklist)
     var averageComboTurn = totalScore / (simulatingGames - brick);
 
     var averageHandsize = totalHandsize / (simulatingGames);
-    ///console.log("Results after simulating " + simulatingGames + " games");
-    ///console.log("*****************************")
+    console.log("Results after simulating " + simulatingGames + " games");
+    console.log("*****************************")
     console.log("Average Combo Turn: " + averageComboTurn);
-    ///console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
-    ///console.log("Average Starting Hand Size " + averageHandsize);
-    ///console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
-    //console.log("Finished in " + (after - before) + " milliseconds");
+    console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
+    console.log("Average Starting Hand Size " + averageHandsize);
+    console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
+    console.log("Finished in " + (after - before) + " milliseconds");
 
     return averageComboTurn;
 }
@@ -202,9 +165,9 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
 {
     
     var playMade = false;
-    var gameLogging = false;
+    var gameLogging = true;
 
-    if (countCardInList(gameState.graveyard, "Cycling Card") > 19 && (gameState.hand.includes("Lotus Petal") || extraManaThisTurn == 1) && gameState.hand.includes("Songs of the Damned") && gameState.hand.includes("Haunting Misery"))
+    if (countCardInList(gameState.graveyard, "Cycling Card") + countCardInList(gameState.graveyard,"Cycling Creature - Green") > 19 && (gameState.hand.includes("Lotus Petal") || extraManaThisTurn == 1) && gameState.hand.includes("Songs of the Damned") && gameState.hand.includes("Haunting Misery"))
     {
         // we win, give turn we won on.
         return resultObject;
@@ -225,6 +188,19 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                 }
             }
 
+            // cycle a card
+            if (gameState.hand.includes("Cycling Enchantment"))
+            {            
+                if (!playMade) {
+                    if (gameLogging){
+                    console.log("cycle a Cycling Enchantment");
+                    }
+                    moveCardFromTo("Cycling Enchantment", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
+                    playMade = true;
+                }
+            }
+
             if (gameState.hand.includes("Cycling Card - Sideboard Card"))
             {            
                 if (!playMade) {
@@ -236,6 +212,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     playMade = true;
                 }
             }
+            
             // cycle a card
             if (gameState.hand.includes("Cycling Land"))
             {            
@@ -260,6 +237,50 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     playMade = true;
                 }
             }
+
+            if ( (gameState.hand.includes("Lotus Petal") || extraManaThisTurn == 1) && gameState.hand.includes("Rofellos Gift") && countCardInList(gameState.graveyard, "Cycling Enchantment") > 1 && countCardInList(gameState.hand, "Cycling Creature - Green") > 0)
+            {
+                // cast rofellos gift
+
+                if(extraManaThisTurn == 1)
+                {
+                    extraManaThisTurn = 0;
+                } else
+                {
+                    moveCardFromTo("Lotus Petal", gameState.hand, gameState.graveyard);
+                }
+
+                moveCardFromTo("Rofellos Gift", gameState.hand, gameState.graveyard);
+
+
+                var amountOfCardsToGet = Math.min(countCardInList(gameState.graveyard, "Cycling Enchantment"), countCardInList(gameState.hand, "Cycling Creature - Green"))
+                if (gameLogging){
+                    console.log("returing amount of cards: " + gameState.hand);
+
+                    console.log("returing amount of cards: " + amountOfCardsToGet);
+                    }
+                for (i = 0; i < amountOfCardsToGet; i++) {
+                    if (gameLogging){
+                        console.log("return card");
+                    }
+                    moveCardFromTo("Cycling Enchantment", gameState.graveyard, gameState.hand);
+                }
+            }
+
+                                    // cycle a card
+            if (gameState.hand.includes("Cycling Creature - Green"))
+            {            
+                if (!playMade) {
+                    if (gameLogging){
+                    console.log("cycle a Green Creature");
+                    }
+                    moveCardFromTo("Cycling Creature - Green", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
+                    playMade = true;
+                }
+            }
+
+            
             // play restless dreams, you don't have anything to cycle anymore
             if (gameState.hand.includes("Lotus Petal") && gameState.hand.includes("Restless Dreams") && countCardInList(gameState.graveyard, "Cycling Card") > 2)
             {            
@@ -300,6 +321,20 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
         else {
             // cycle a card
             cardCycled = false;
+            if (gameState.hand.includes("Cycling Enchantment"))
+            {            
+                if (!playMade) {
+                    if (gameLogging){
+        
+                    console.log("cycle a cycling Enchantment");
+                    }
+                    moveCardFromTo("Cycling Enchantment", gameState.hand, gameState.graveyard);
+                    drawACard(gameState.deck,gameState.hand);
+                    extraManaThisTurn = 0;
+                    cardCycled = true;
+                }
+            }
+            
             if (gameState.hand.includes("Cycling Card"))
             {            
                 if (!playMade) {
@@ -313,7 +348,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     cardCycled = true;
                 }
             }
-
+            
             if (gameState.hand.includes("Cycling Card - Sideboard Card"))
             {            
                 if (!playMade) {
@@ -411,7 +446,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
         // take an extra turn
         if (gameLogging){
             console.log("take a turn, this hand has not plays:");
-            console.log(hand)
+            console.log(gameState.hand)
         }
         playedALand = false;
         extraManaThisTurn = 0;
@@ -626,10 +661,12 @@ function getRandomCardFrom(list)
     return list[Math.floor(Math.random() * list.length)];
 }
 
-function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, killconditions = 1)
+function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, killconditions = 1, enchantmentsCycler, greenCreatureCyclers)
 {
     var deck = [];
     deck.push("Lotus Petal");
+    deck.push("Lotus Petal");
+    deck.push("Rofellos Gift");
     deck.push("Fluctuator");
     deck.push("Fluctuator");
     deck.push("Fluctuator");
@@ -645,17 +682,16 @@ function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, ki
         deck.push("Haunting Misery");
     } 
 
+    for (i = 0; i < enchantmentsCycler; i++) {
+        deck.push("Cycling Enchantment");
+    } 
 
-    var creatures = 60 - deck.length - sideboardCyclers - sideboardCards - tappedCyclingLands;
-
-
+    for (i = 0; i < greenCreatureCyclers; i++) {
+        deck.push("Cycling Creature - Green");
+    } 
 
     for (i = 0; i < tappedCyclingLands; i++) {
         deck.push("Cycling Land");
-    } 
-
-    for (i = 0; i < creatures; i++) {
-        deck.push("Cycling Card");
     } 
 
     for (i = 0; i < sideboardCyclers; i++) {
@@ -664,6 +700,12 @@ function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, ki
 
     for (i = 0; i < sideboardCards; i++) {
         deck.push("Misdirection");
+    } 
+
+    var creatures = 60 - deck.length;
+
+    for (i = 0; i < creatures; i++) {
+        deck.push("Cycling Card");
     } 
 
     return shuffle(deck);
