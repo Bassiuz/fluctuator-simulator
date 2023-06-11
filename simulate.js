@@ -1,5 +1,5 @@
 
-console.log(simulateAllLists());
+console.log(simulateSomeLists());
 
 function simulateTestGame()
 {
@@ -33,7 +33,14 @@ function compareDecklists()
     console.log(averageTurnComparedDecklist - averageTurnCoreDecklist);
 }
 
+function simulateSomeLists()
+{
+    console.log("Core Decklist");
+    simulateGames(returnCoreDecklist);
 
+    console.log("No Petal Decklist");
+    simulateGames(returnNoPetalDecklist);
+}
 
 
 function simulateAllLists()
@@ -94,6 +101,11 @@ function simulateAllLists()
     }
 }
 
+function returnNoPetalDecklist()
+{
+    return returnDecklist(20, 0, 0, 1, 0)
+}
+
 function returnCoreDecklist()
 {
     return returnDecklist(20, 0, 0, 1)
@@ -138,7 +150,7 @@ function simulateGames(returnCoreDecklist)
 {
     var before = Date.now();
     
-    var simulatingGames = 10000000;
+    var simulatingGames = 1000000;
 
     var turn2 = 0;
     var turn3 = 0;
@@ -181,13 +193,13 @@ function simulateGames(returnCoreDecklist)
     var averageComboTurn = totalScore / (simulatingGames - brick);
 
     var averageHandsize = totalHandsize / (simulatingGames);
-    ///console.log("Results after simulating " + simulatingGames + " games");
-    ///console.log("*****************************")
+    console.log("Results after simulating " + simulatingGames + " games");
+    console.log("*****************************")
     console.log("Average Combo Turn: " + averageComboTurn);
-    ///console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
-    ///console.log("Average Starting Hand Size " + averageHandsize);
-    ///console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
-    //console.log("Finished in " + (after - before) + " milliseconds");
+    console.log("Bricked Game Percentage: " + brick / simulatingGames * 100);
+    console.log("Average Starting Hand Size " + averageHandsize);
+    console.log("Turn 2: " + turn2 + " Turn 3: " + turn3 + " Turn 4: " + turn4 + " Turn 5: " + turn5 + " Turn 6: " + turn6 + " Turn 7: " + turn7 + " Turn 8: " + turn8 + " Turn 9: " + turn9 + " Turn 10: " + turn10+ " Brick: " + brick)
+    console.log("Finished in " + (after - before) + " milliseconds");
 
     return averageComboTurn;
 }
@@ -198,13 +210,39 @@ function simulateGame(onThePlay = false, returnDecklistFunction)
     return mulligan(7, onThePlay, returnDecklistFunction);
 }
 
+function haveEnoughManaToPlayFluctuatorAndWin(gameState, playedALand, extraManaThisTurn)
+{
+    if (gameState.hand.includes("Lotus Petal") || gameState.deck.includes("Lotus Petal"))
+    {
+        // we just need 2 mana, we know we have petal for the kill
+        return extraManaThisTurn == 2;
+    }
+    else
+    {
+        // we don't have petal, so we need dromar's cavern in play or 2 mana and cavern in the deck and no land played
+
+        if (gameState.battlefield.includes("Dromar's Cavern"))
+        {
+            return extraManaThisTurn == 3;
+        }
+
+        if (playedALand)
+        {
+            return false;
+        }
+
+        // we don't have cavenr in play yet, but have 2 mana and cavern in the deck
+        return extraManaThisTurn == 2;
+    }
+}
+
 function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultObject = {turn: 1, mulligan: gameState.hand.length})
 {
     
     var playMade = false;
     var gameLogging = false;
 
-    if (countCardInList(gameState.graveyard, "Cycling Card") > 19 && (gameState.hand.includes("Lotus Petal") || extraManaThisTurn == 1) && gameState.hand.includes("Songs of the Damned") && gameState.hand.includes("Haunting Misery"))
+    if (countCardInList(gameState.graveyard, "Cycling Card") > 19 && (gameState.hand.includes("Lotus Petal") || extraManaThisTurn > 0) && gameState.hand.includes("Songs of the Damned") && gameState.hand.includes("Haunting Misery"))
     {
         // we win, give turn we won on.
         return resultObject;
@@ -283,7 +321,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
             }
         }
 
-    if (countCardInList(gameState.battlefield, "Fluctuator") == 0 && (countCardInList(gameState.battlefield, "Cycling Land") + countCardInList(gameState.battlefield, "Untapped Cycling Land") + countCardInList(gameState.battlefield, "Dromar's Cavern") + extraManaThisTurn) == 2)
+    if (countCardInList(gameState.battlefield, "Fluctuator") == 0 && haveEnoughManaToPlayFluctuatorAndWin(gameState, playedALand, extraManaThisTurn))
     {
         if (countCardInList(gameState.hand, "Fluctuator") > 0)
         {
@@ -309,7 +347,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     }
                     moveCardFromTo("Cycling Card", gameState.hand, gameState.graveyard);
                     drawACard(gameState.deck,gameState.hand);
-                    extraManaThisTurn = 0;
+                    extraManaThisTurn = extraManaThisTurn -2;
                     cardCycled = true;
                 }
             }
@@ -322,7 +360,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     }
                     moveCardFromTo("Cycling Card - Sideboard Card", gameState.hand, gameState.graveyard);
                     drawACard(gameState.deck,gameState.hand);
-                    extraManaThisTurn = 0;
+                    extraManaThisTurn = extraManaThisTurn - 2;
                     cardCycled = true;
                 }
             }
@@ -336,7 +374,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
                     }
                     moveCardFromTo("Cycling Land", gameState.hand, gameState.graveyard);
                     drawACard(gameState.deck,gameState.hand);
-                    extraManaThisTurn = 0;
+                    extraManaThisTurn = extraManaThisTurn - 2;
                     cardCycled = true;
                 }
             }
@@ -366,6 +404,12 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
             moveCardFromTo("Untapped Cycling Land", gameState.hand, gameState.battlefield);
             playedALand = true;
             playMade = true;
+
+            if (gameState.hand.includes("Lotus Petal") || gameState.deck.includes("Lotus Petal"))
+            {
+                extraManaThisTurn = 1;
+            }
+
         }
     }
     else if (gameState.hand.includes("Dromar's Cavern") && (gameState.battlefield.includes("Cycling Land") || gameState.battlefield.includes("Untapped Cycling Land")))
@@ -414,7 +458,7 @@ function makePlay(gameState, playedALand = false, extraManaThisTurn = 0, resultO
             console.log(hand)
         }
         playedALand = false;
-        extraManaThisTurn = 0;
+        extraManaThisTurn = countCardInList(gameState.battlefield, "Cycling Land") + countCardInList(gameState.battlefield, "Untapped Cycling Land") + countCardInList(gameState.battlefield, "Dromar's Cavern");
         resultObject.turn = resultObject.turn + 1;
         drawACard(gameState.deck, gameState.hand);
     }
@@ -626,10 +670,9 @@ function getRandomCardFrom(list)
     return list[Math.floor(Math.random() * list.length)];
 }
 
-function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, killconditions = 1)
+function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, killconditions = 1, lotuspetal = 1)
 {
     var deck = [];
-    deck.push("Lotus Petal");
     deck.push("Fluctuator");
     deck.push("Fluctuator");
     deck.push("Fluctuator");
@@ -645,6 +688,9 @@ function returnDecklist(tappedCyclingLands, sideboardCyclers, sideboardCards, ki
         deck.push("Haunting Misery");
     } 
 
+    for (i = 0; i < lotuspetal; i++) {
+        deck.push("Lotus Petal");
+    } 
 
     var creatures = 60 - deck.length - sideboardCyclers - sideboardCards - tappedCyclingLands;
 
